@@ -7,6 +7,14 @@ import java.util.Iterator;
 import android.content.SharedPreferences;
 import android.content.Context;
 
+import android.os.Build;
+
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyProperties;
+
+import androidx.security.crypto.EncryptedSharedPreferences;
+import androidx.security.crypto.MasterKey;
+
 public class SharedPreferencesHandler {
 	private SharedPreferences prefs;
 
