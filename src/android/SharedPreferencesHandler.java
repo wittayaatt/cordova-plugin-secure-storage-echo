@@ -20,21 +20,26 @@ public class SharedPreferencesHandler {
 
 	public SharedPreferencesHandler (String prefsName, Context ctx){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            MasterKey key = new MasterKey.Builder(ctx)
-                .setKeyGenParameterSpec(
-                        new KeyGenParameterSpec
-                                .Builder(MasterKey.DEFAULT_MASTER_KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
-                                .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
-                                .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
-                                .setKeySize(256).build())
-                .build();
-            prefs = EncryptedSharedPreferences.create(
-                ctx,
-                prefsName  + "_SS",
-                key,
-                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-            );
+            try {
+                MasterKey key = new MasterKey.Builder(ctx)
+                    .setKeyGenParameterSpec(
+                            new KeyGenParameterSpec
+                                    .Builder(MasterKey.DEFAULT_MASTER_KEY_ALIAS, KeyProperties.PURPOSE_ENCRYPT | KeyProperties.PURPOSE_DECRYPT)
+                                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
+                                    .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
+                                    .setKeySize(256).build())
+                    .build();
+                prefs = EncryptedSharedPreferences.create(
+                    ctx,
+                    prefsName  + "_SS",
+                    key,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                );
+            } catch (Exception ex) {
+                // Cannot contruct Encrypted storage - fall back
+                prefs = ctx.getSharedPreferences(prefsName  + "_SS", 0);
+            }
         } else {
             prefs = ctx.getSharedPreferences(prefsName  + "_SS", 0);
         }
